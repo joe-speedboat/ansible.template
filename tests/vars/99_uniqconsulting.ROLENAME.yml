@@ -1,0 +1,37 @@
+---
+#################
+#   ROLE-NAME
+#################
+
+#ROLESPECIFIC VARIABLES
+
+
+#################
+#   OS Basic
+#################
+
+osbasic_mail: false
+osbasic_sysadmin_email: 'support@example.org'
+osbasic_mail_relay_host: 'smtp.example.org'
+osbasic_sender_domain: 'example.org'
+
+osbasic_syslog: false
+osbasic_syslog_remote_host: '@graylog.example.org:514'
+
+osbasic_snmpd: false
+osbasic_snmp_sourceip: '192.168.1.10'
+osbasic_snmp_community_name: 'MyCommunity'
+
+install_openvmtools: yes
+
+
+#################
+#    Firewall
+#################
+
+additional_open_ports:
+- port: 10050
+  protocol: tcp
+
+...
+

@@ -1,0 +1,7 @@
+#!/usr/bin/ansible-playbook 
+---
+- name: ROLENAME Setup
+  hosts: localhost
+  roles:
+    - uniqconsulting.ROLENAME
+...

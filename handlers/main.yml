@@ -1,0 +1,16 @@
+---
+# Here belong all actions like service-restart,
+# config-file loads, etc. that will be started
+# if a change on a task was made
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
+
+- name: restart iptables
+  service:
+    name: iptables
+    state: restarted
+
+...

@@ -1,0 +1,1 @@
+Put all templates here, that will generate a file locally

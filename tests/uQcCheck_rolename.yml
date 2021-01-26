@@ -1,0 +1,40 @@
+#!/usr/bin/ansible-playbook
+---
+- name: Check ROLENAME State
+  hosts: localhost
+  vars:
+    running_services:
+    - SERVICE1
+    - SERVICE2
+
+    files_existing:
+    - /tmp/example
+  tasks:
+  - name: get service facts
+    service_facts:
+
+  - name: Check Services
+    shell: "systemctl --no-pager status {{ item }} > /dev/null 2>&1" 
+    register: error_code
+    failed_when: error_code.rc != 0
+    changed_when: false
+    ignore_errors: yes
+    with_items: "{{ running_services }}"
+
+  - name: Get file status
+    stat:
+      path: "{{ item }}"
+    with_items: "{{ files_existing }}"
+    register: check_file_result
+    ignore_errors: yes
+
+  - name: Check Files
+    debug:
+      msg: "File {{ item.invocation.module_args.path }} doesn't exist"
+    with_items: "{{ check_file_result.results }}"
+    ignore_errors: yes
+    failed_when: item.stat.exists == False
+    when: item.stat.exists == False
+    loop_control:
+      label: "{{ item.invocation.module_args.path }}"
+

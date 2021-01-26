@@ -1,0 +1,34 @@
+---
+# Add all dependent roles, that should be executed before
+# the content of this role. If this is an appliance
+# there should always be atleast these 3 includes
+
+# Change needed roles here
+- name: download dependencies from galaxy
+  shell: ansible-galaxy install uniqconsulting.os_basic uniqconsulting.open_vm_tools uniqconsulting.firewall uniqconsulting.nginx uniqconsulting.mariadb
+
+# Include all roles like this:
+
+- name: uniqconsulting.os_basic
+  include_role:
+    name: uniqconsulting.os_basic
+  vars:
+    osbasic_selinux: true
+    osbasic_selinux_policy: disabled
+    osbasic_os_update: true
+    osbasic_package_cleanup: true
+    osbasic_package_upgrade: all
+    osbasic_epel: true
+
+- name: uniqconsulting.open_vm_tools
+  include_role:
+    name: uniqconsulting.open_vm_tools
+  when: install_openvmtools
+      
+- name: uniqconsulting.firewall
+  include_role:
+    name: uniqconsulting.firewall
+  vars:
+    firewall_open_ports: "{{ role_ports + additional_open_ports }}"
+
+...

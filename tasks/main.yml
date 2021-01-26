@@ -1,0 +1,41 @@
+---
+# In this file only includes will be made
+# See examples below
+
+# Never delete this
+- name: include global vars file if present
+  import_tasks: include-vars.yml
+
+######## START: Appliance Part ########
+- name: include the system-check
+  include_tasks: "include-file.yml"
+  loop_control:
+    loop_var: include_file_name 
+  loop:
+  - pre_systemcheck.yml
+  when: run_systemcheck
+  
+- name: include pre-dependencies
+  include_tasks: "include-file.yml"
+  loop_control:
+    loop_var: include_file_name 
+  loop:
+  - pre_dependencies.yml
+######## END: Appliance Part ########
+
+- name: "include tasks"
+  include_tasks: "include-file.yml"
+  loop_control:
+    loop_var: include_file_name 
+  with_lines: ls {{ role_path }}/tasks/shared | egrep '[0-9]{2}_.*\.yml' | sort -n
+
+######## START: Appliance Part ########
+- name: include post-dependencies
+  include_tasks: "include-file.yml"
+  loop_control:
+    loop_var: include_file_name 
+  loop:
+  - post_dependencies.yml
+######## END: Appliance Part ########
+
+...

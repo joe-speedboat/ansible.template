@@ -1,0 +1,19 @@
+---
+# Change as needed
+galaxy_info:
+  author: uniQconsulting ag
+  company: uniqconsulting
+  role_name: <ROLENAME>
+  description: <DESCRIPTION>
+  min_ansible_version: 2.4
+  license: GPLv3
+  platforms:
+  - name: EL
+    versions:
+    - 7
+    - 8
+  galaxy_tags: []
+
+# We don't use dependencies in here anymore
+dependencies: []
+...
