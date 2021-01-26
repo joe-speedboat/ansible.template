@@ -6,7 +6,7 @@
 - name: find all task files
   shell: |
     cd {{ role_path }}/tasks
-    ls -1 */*.yml | sed 's#.*\/##' | sort -nu
+    ls -1 */[0-9][0-9]*.yml | sed 's#.*\/##' | sort -nu
   register: include_file_name_results
 ######## END: Get playbooks to run ########
 
