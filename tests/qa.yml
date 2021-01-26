@@ -1,0 +1,12 @@
+#!/usr/bin/ansible-playbook 
+---
+# here we provide the playbook we use for QA process, 
+# with useful variables matchting our QA needs
+- name: <ROLENAME> QA Setup
+  hosts: <VMNAME>
+  vars:
+    mandatory-var: mandatory-value
+    var1: value1
+  roles:
+    - joe-speedboat.<ROLENAME>
+...

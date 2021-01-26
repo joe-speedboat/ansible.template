@@ -1,11 +1,10 @@
 ---
 # Change as needed
 galaxy_info:
-  author: uniQconsulting ag
-  company: uniqconsulting
-  role_name: <ROLENAME>
-  description: <DESCRIPTION>
-  min_ansible_version: 2.4
+  author: Chris Ruettimann
+  role_name: joe-speedboat.template
+  description: <DESCRIPTION_xxx>
+  min_ansible_version: 2.9
   license: GPLv3
   platforms:
   - name: EL

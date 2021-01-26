@@ -1,0 +1,10 @@
+---
+- debug: 
+    msg: 
+    - "This is an example task file for tasks/shared/01_run_on_all_systems.yml"
+    - "You can delete that safely"
+    - "mandatory_default_var1xxx: {{ mandatory_default_var1xxx }}"
+    - "default_var2_xxx: {{ default_var2_xxx }}"
+    - "fixed_var1: {{ fixed_var1 }}"
+    - "This is the end of the debug message"
+...

@@ -1,5 +1,9 @@
 ---
 
+- debug: 
+    msg: |
+      include_file_name: {{ include_file_name }}
+
 - name: include {{ include_file_name }}
   include_tasks: '{{ include_file_path }}'
   with_first_found:
@@ -9,7 +13,6 @@
         - '{{ ansible_distribution }}/{{ include_file_name }}'
         - '{{ ansible_os_family }}/{{ include_file_name }}'
         - 'shared/{{ include_file_name }}'
-        - '{{ include_file_name }}'
   loop_control:
     loop_var: include_file_path
 

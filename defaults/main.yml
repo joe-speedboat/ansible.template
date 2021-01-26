@@ -2,8 +2,7 @@
 # Here belong all variables, that can be changed by a vars-file,
 # a playbook or a include.
 
-run_systemcheck: yes
-install_openvmtools: yes
-additional_open_ports: []
+mandatory_default_var1xxx: playbook-will-fail-with-this-var
+default_var2_xxx: this_is_defined_in_defaults_folder
 
 ...

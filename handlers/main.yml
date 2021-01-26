@@ -3,14 +3,9 @@
 # config-file loads, etc. that will be started
 # if a change on a task was made
 
-- name: restart nginx
+- name: restart <SERVICE>
   service:
-    name: nginx
-    state: restarted
-
-- name: restart iptables
-  service:
-    name: iptables
+    name: <SERVICE>
     state: restarted
 
 ...
