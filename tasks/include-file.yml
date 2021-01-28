@@ -1,9 +1,4 @@
 ---
-
-- debug: 
-    msg: |
-      include_file_name: {{ include_file_name }}
-
 - name: include {{ include_file_name }}
   include_tasks: '{{ include_file_path }}'
   with_first_found:
