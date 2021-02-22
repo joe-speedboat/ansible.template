@@ -2,11 +2,13 @@
 ---
 # here we provide the playbook we use for QA process, 
 # with useful variables matchting our QA needs
-- name: <ROLENAME> QA Setup
-  hosts: <VMNAME>
+# When role has finished, health check may be useful as well
+
+- name: Template QA Setup
+  hosts: vm11
   vars:
     mandatory-var: mandatory-value
     var1: value1
   roles:
-    - joe-speedboat.<ROLENAME>
+    - joe-speedboat.template
 ...
