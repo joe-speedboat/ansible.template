@@ -73,15 +73,14 @@ then
 
 elif [ "$os_type$os_ver" == "rel8"  ] #########################################################
 then
-  subscription-manager register | grep -q 'system is already registered'
+  yes | subscription-manager register | grep -q 'system is already registered'
   if [ $? -ne 0 ]
   then
     echo "ERROR: System is not registered in RHN"
     exit 1
   fi
-  subscription-manager repos --enable codeready-builder-for-rhel-8-$(arch)-rpms
-  dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-  for PKG in epel-release git wget curl ansible
+  subscription-manager repos --enable ansible-2.8-for-rhel-8-x86_64-rpms
+  for PKG in git wget curl ansible
   do
      rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || dnf -y install $PKG
   done
