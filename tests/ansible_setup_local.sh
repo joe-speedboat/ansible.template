@@ -1,7 +1,7 @@
 #!/bin/bash
 #DESC: Setup and configure Ansible control node
 #WHO: chris@bitbull.ch
-#DATE: 20211229
+#DATE: 20220202
 
 
 test -f /etc/os-release
@@ -68,6 +68,7 @@ then
   sed -i "/^roles_path/a\ \n#additional paths to search for collections in, colon separated\ncollections_paths = /etc/ansible/collections" $ansibleconfigfile
 
   test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
+  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
   test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
   ansible-galaxy search joe-speedboat | cat
 
@@ -92,6 +93,7 @@ then
   sed -i "/^roles_path/a\ \n#additional paths to search for collections in, colon separated\ncollections_paths = /etc/ansible/collections" $ansibleconfigfile
 
   test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
+  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
   test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
   ansible-galaxy search joe-speedboat | cat
 
@@ -105,6 +107,7 @@ then
   ansibleconfigfile="/etc/ansible/ansible.cfg"
   test -d /etc/ansible || mkdir /etc/ansible ; chmod 755 /etc/ansible
   test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
+  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
   test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
   test -f $ansibleconfigfile && cp -anv $ansibleconfigfile $ansibleconfigfile.bak
   ansible-config init --disabled -t all > $ansibleconfigfile
