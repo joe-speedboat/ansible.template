@@ -69,11 +69,11 @@ Including of task-files, depending on given ansible-facts, has to get created in
 
 ## One final word
 Many thanks to all supporters of OpenSource products,    
-only by sharing our solutions we could get this far!
+only by sharing our solutions we could get this far!   
 If you use this construct for your productive work,    
-we would appreciate a donation to the [Stifung Buehl](https://www.stiftung-buehl.ch/ueber-uns/spenden).
+we would appreciate a donation to the [Stifung Buehl](https://www.stiftung-buehl.ch/ueber-uns/spenden).   
 All our know-how is OpenSource and your donation enables    
-children and young people with special needs to find a place in life.
+children and young people with special needs to find a place in life.   
 
 Chris Ruettimann<chris@bitbull.ch>
 
