@@ -4,7 +4,7 @@
 - set_fact:
     include_file_names: []
 
-- name: find all task files with numeric pattern
+- name: find role directory  (awx aware)
   find:
     paths: 
     - /runner/requirements_roles
@@ -14,6 +14,23 @@
     - "/etc/ansible/roles/{{role_path|basename}}/tasks"
     - "/runner/project/roles/{{role_path|basename}}/tasks"
     - "/runner/requirements_roles/{{role_path|basename}}/tasks"
+    recurse: no
+    depth: 1
+    file_type: file 
+    use_regex: no 
+    patterns: main.yml
+  delegate_to: localhost
+  become: no
+  run_once: True
+  register: found_task_dirs
+
+- name: define tasks directory
+  set_fact:
+    task_dir: "{{ found_task_dirs.files[0].path|dirname }}"
+
+- name: find all task files with numeric pattern
+  find:
+    paths: "{{ task_dir }}"
     recurse: yes 
     depth: 2 
     file_type: file 
@@ -24,7 +41,10 @@
   run_once: True
   register: found_playbooks
 
-- debug: var=found_playbooks
+- name: print found playbooks
+  debug: 
+    var: found_playbooks
+  when: debug_role
 
 - name: trim all playbook paths
   set_fact:
@@ -32,12 +52,16 @@
   loop: "{{ found_playbooks.files }}"
   loop_control:
     loop_var: plays
+  no_log: True
 
 - name: sort and uniq
   set_fact: 
     include_file_names: "{{ include_file_names | unique | sort }}"
 
-- debug: var=include_file_names
+- name: print include file names
+  debug: 
+    var: include_file_names
+  when: debug_role
 
 ######## END: Get playbooks to run ########
 
