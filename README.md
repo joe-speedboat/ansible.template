@@ -65,7 +65,7 @@ tasks/shared/30_post.yml
 ```
 
 ## Drawback of this solution
-Including of tasks files, depending on given facts, have to get created in blocks within the task files.
+Including of task-files, depending on given ansible-facts, has to get created in blocks statements within the task files itself.
 
 ## One final word
 Many thanks to all supporters of OpenSource products,    
