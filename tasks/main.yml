@@ -23,6 +23,7 @@
   become: no
   run_once: True
   register: found_task_dirs
+  no_log: True
 
 - name: define tasks directory
   set_fact:
