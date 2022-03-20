@@ -12,6 +12,8 @@
     - "{{ lookup('env', 'HOME') }}/.ansible/roles{{role_path|basename}}/tasks"
     - "/usr/share/ansible/roles/{{role_path|basename}}/tasks"
     - "/etc/ansible/roles/{{role_path|basename}}/tasks"
+    - "/runner/project/roles/{{role_path|basename}}/tasks"
+    - "/runner/requirements_roles/{{role_path|basename}}/tasks"
     recurse: yes 
     depth: 2 
     file_type: file 
