@@ -75,7 +75,7 @@ we would appreciate a donation to the [Stifung Buehl](https://www.stiftung-buehl
 All our know-how is OpenSource and your donation enables    
 children and young people with special needs to find a place in life.   
 
-Chris Ruettimann<chris@bitbull.ch>
+Chris Ruettimann <chris@bitbull.ch>
 
 # <ROLENAME>
 
