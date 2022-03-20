@@ -1,3 +1,4 @@
+# tasks/main.yml
 ---
 ######## START: Get playbooks to run ########
 
@@ -42,11 +43,6 @@
   run_once: True
   register: found_playbooks
 
-- name: print found playbooks
-  debug: 
-    var: found_playbooks
-  when: debug_role
-
 - name: trim all playbook paths
   set_fact:
     include_file_names: "{{ include_file_names + [ plays.path | regex_replace('.*/', '') ] }}"
@@ -58,11 +54,6 @@
 - name: sort and uniq
   set_fact: 
     include_file_names: "{{ include_file_names | unique | sort }}"
-
-- name: print include file names
-  debug: 
-    var: include_file_names
-  when: debug_role
 
 ######## END: Get playbooks to run ########
 

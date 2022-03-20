@@ -1,10 +1,8 @@
+# defaults/main.yml
 ---
 # Here belong all variables, that can be changed by a vars-file,
 # a playbook or a include.
 
-debug_role: False
-
-mandatory_default_var1xxx: playbook-will-fail-with-this-var
+mandatory_default_var1xxx: playbook-will-fail-without-this-var
 default_var2_xxx: this_is_defined_in_defaults_folder
-
 ...
