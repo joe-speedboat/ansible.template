@@ -5,9 +5,9 @@
 # When role has finished, health check may be useful as well
 
 - name: Template QA Setup
-  hosts: vm11
+  hosts: localhost
   vars:
-    mandatory-var: mandatory-value
+    mandatory_var: mandatory_value
     var1: value1
   roles:
     - joe-speedboat.template
