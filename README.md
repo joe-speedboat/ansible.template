@@ -16,7 +16,7 @@ And I am constantly trying to do justice to this.
 For this purpose I have developed an Ansible role template, which is mandatory:    
 * Clear
 * Unambiguous
-* Dynamic
+* Dynamic   
 which in turn reduces:    
 * Error
 * Familiarization
