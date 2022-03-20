@@ -2,8 +2,9 @@
 # Change as needed
 galaxy_info:
   author: Chris Ruettimann
-  role_name: joe-speedboat.template
-  description: <DESCRIPTION_xxx>
+  role_name: template
+  namespace: joe-speedboat
+  description: Bitbull Template Ansible Role
   min_ansible_version: 2.9
   license: GPLv3
   platforms:
