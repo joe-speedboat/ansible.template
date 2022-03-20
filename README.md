@@ -43,7 +43,7 @@ This template concept, which I searched on the internet and did not find is fore
   * ```{{ ansible_os_family }}```
     * RedHat
     * Debian
-  * ```shared``
+  * ```shared```
     * This is the fallback, if noting above matches
 
 You can look ito the role directory, it will be clear why and how to use it.   
