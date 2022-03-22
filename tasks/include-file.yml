@@ -1,14 +1,18 @@
 ---
+# ansible_distribution: AlmaLinux, CentOS, Ubuntu, Fedora
+# ansible_distribution_major_version: 8, 7, 18, 32
+# ansible_os_family: RedHat, RedHat, Debian, RedHat
 - name: include {{ include_file_name }}
   include_tasks: '{{ include_file_path }}'
   with_first_found:
     - files:
         - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
+        - '{{ task_dir }}/{{ ansible_os_family }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
+        - '{{ task_dir }}/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}'
         - '{{ task_dir }}/shared/{{ include_file_name }}'
   loop_control:
     loop_var: include_file_path
-
 ...
