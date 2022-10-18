@@ -3,11 +3,18 @@
   include_tasks: '{{ include_file_path }}'
   with_first_found:
     - files:
+        # ansible_distribution_custom var will cover rocky and alma linux together
+        - '{{ task_dir }}/{{ ansible_distribution_custom }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
+        - '{{ task_dir }}/{{ ansible_distribution_custom }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
+        - '{{ task_dir }}/{{ ansible_distribution_custom }}/{{ include_file_name }}'
+        # regular facts will get catched after custom lookup
         - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution }}/{{ include_file_name }}'
+        # if all fails, we fallback to os family and finally runn emtpy task fallback.yml
         - '{{ task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}'
         - '{{ task_dir }}/shared/{{ include_file_name }}'
+        - '{{ task_dir }}/fallback.yml'
   loop_control:
     loop_var: include_file_path
 

@@ -2,6 +2,13 @@
 ---
 ######## START: Get playbooks to run ########
 
+- name: Create rhelClone fact if needed
+  set_fact:
+    ansible_distribution_custom: rhelClone
+  when: >
+    ansible_distribution == "AlmaLinux" or
+    ansible_distribution == "Rocky"
+
 - set_fact:
     include_file_names: []
 
