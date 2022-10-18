@@ -46,6 +46,13 @@ This template concept, which I searched on the internet and did not find is fore
   * ```shared```
     * This is the fallback, if noting above matches
 
+* Note, since RockyLinux and AlmaLinux are RHEL clones that work almost similar, we needed just one os folder for both
+  * If you need tasks that work for Alma and Rocky, create a folder named ```rhelClone``` in ```tasks``` folder
+    * It get catched like the var ```{{ ansible_distribution }}``` above
+    * ```rhelClone-8.1```
+    * ```rhelClone-8```
+    * ```rhelClone```
+
 You can look ito the role directory, it will be clear why and how to use it.   
 
 To get an overview, just look up the file names:
