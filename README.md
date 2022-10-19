@@ -30,6 +30,12 @@ This template concept, which I searched on the internet and did not find is fore
 * Create a deduplicated list of task files
 * Reorder them by numbers
 * Run tasks by first match with the ansible_facts of the target machine (```include-file.yml```)
+  * ```{{  ansible_distribution_custom }}-{{ ansible_distribution_version }}```
+    * rhelClone-7.9
+  * ```{{ ansible_distribution_custom }}-{{ ansible_distribution_major_version }}```
+    * rhelClone-7
+  * ```{{ ansible_distribution_custom }}```
+    * rhelClone
   * ```{{ ansible_distribution }}-{{ ansible_distribution_version }}```
     * CentOS-7.9
     * Ubuntu-20.04
@@ -39,7 +45,6 @@ This template concept, which I searched on the internet and did not find is fore
   * ```{{ ansible_distribution }}```
     * CentOS
     * Ubuntu
-       
   * ```{{ ansible_os_family }}```
     * RedHat
     * Debian
@@ -49,9 +54,6 @@ This template concept, which I searched on the internet and did not find is fore
 * Note, since RockyLinux and AlmaLinux are RHEL clones that work almost similar, we needed just one os folder for both
   * If you need tasks that work for Alma and Rocky, create a folder named ```rhelClone``` in ```tasks``` folder
     * It get catched like the var ```{{ ansible_distribution }}``` above
-    * ```rhelClone-8.1```
-    * ```rhelClone-8```
-    * ```rhelClone```
 
 You can look ito the role directory, it will be clear why and how to use it.   
 
