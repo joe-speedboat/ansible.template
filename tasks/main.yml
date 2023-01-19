@@ -2,9 +2,33 @@
 ---
 ######## START: Get playbooks to run ########
 
-- name: Create rhelClone fact if needed
+- name: Create rhelAll fact fallback
   set_fact:
-    ansible_distribution_custom: rhelClone
+    ansible_distribution_combine: dummy
+
+- name: Create rhelAll fact if needed when AlmaLinux, Rocky, RHEL
+  set_fact:
+    ansible_distribution_combine: rhelAll
+  when: >
+    ansible_distribution == "AlmaLinux" or
+    ansible_distribution == "Rocky" or
+    ansible_distribution == "RedHat" or
+    ansible_distribution == "CentOS"
+
+- name: fix ansible_python_interpreter, for Rocky and AlmaLinux, see lib/ansible/config/base.yml
+  block:
+  - name: rhelClone v9
+    set_fact:
+      ansible_python_interpreter: /usr/bin/python3
+    when: ansible_distribution_major_version|int == 9
+  - name: rhelClone v8
+    set_fact:
+      ansible_python_interpreter: /usr/libexec/platform-python
+    when: ansible_distribution_major_version|int == 8
+  - name: rhelClone v6
+    set_fact:
+      ansible_python_interpreter: /usr/bin/python
+    when: ansible_distribution_major_version|int == 6
   when: >
     ansible_distribution == "AlmaLinux" or
     ansible_distribution == "Rocky"
@@ -73,4 +97,4 @@
   with_items:
     - "{{ include_file_names }}"
 ######## END: Execution part ########
-...
+

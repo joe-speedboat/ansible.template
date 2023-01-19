@@ -31,11 +31,11 @@ This template concept, which I searched on the internet and did not find is fore
 * Reorder them by numbers
 * Run tasks by first match with the ansible_facts of the target machine (```include-file.yml```)
   * ```{{  ansible_distribution_custom }}-{{ ansible_distribution_version }}```
-    * rhelClone-7.9
+    * rhelAll-7.9
   * ```{{ ansible_distribution_custom }}-{{ ansible_distribution_major_version }}```
-    * rhelClone-7
+    * rhelAll-7
   * ```{{ ansible_distribution_custom }}```
-    * rhelClone
+    * rhelAll
   * ```{{ ansible_distribution }}-{{ ansible_distribution_version }}```
     * CentOS-7.9
     * Ubuntu-20.04
@@ -52,7 +52,7 @@ This template concept, which I searched on the internet and did not find is fore
     * This is the fallback, if noting above matches
 
 * Note, since RockyLinux and AlmaLinux are RHEL clones that work almost similar, we needed just one os folder for both
-  * If you need tasks that work for Alma and Rocky, create a folder named ```rhelClone``` in ```tasks``` folder
+  * If you need tasks that work for Alma and Rocky, create a folder named ```rhelAll``` in ```tasks``` folder
     * It get catched like the var ```{{ ansible_distribution }}``` above
 
 You can look ito the role directory, it will be clear why and how to use it.   
