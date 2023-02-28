@@ -20,7 +20,7 @@
         - '{{ task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
         - '{{ task_dir }}/{{ ansible_distribution_combine }}/{{ include_file_name }}'
-        # if all fails, we fallback to os family and finally run emtpy task fallback.yml
+        # if all fails, we fallback to os family
         - '{{ task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}'
         - '{{ task_dir }}/shared/{{ include_file_name }}'
   loop_control:
