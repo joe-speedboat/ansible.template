@@ -59,11 +59,11 @@
 
 - name: define tasks directory
   set_fact:
-    task_dir: "{{ found_task_dirs.files[0].path|dirname }}"
+    "{{ 'task_dir_' + role_name|split('.')|last }}": "{{ found_task_dirs.files[0].path|dirname }}"
 
 - name: find all task files with numeric pattern
   find:
-    paths: "{{ task_dir }}"
+    paths: "{{ vars['task_dir_' + role_name|split('.')|last] }}"
     recurse: yes 
     depth: 2 
     file_type: file 

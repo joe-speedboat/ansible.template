@@ -13,16 +13,16 @@
         # tasks/RedHat                   tasks/RedHat -> only useful for debianX
         # tasks/shared                   tasks/shared
         # regular facts will get catched first, eg.: Rocky-9 or RedHat-9 or AlmaLinux9
-        - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
-        - '{{ task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
-        - '{{ task_dir }}/{{ ansible_distribution }}/{{ include_file_name }}'
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution }}/{{ include_file_name }}"
         # ansible_distribution_combine var will cover Rocky-9 and RedHat-9 and AlmaLinux9
-        - '{{ task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/{{ include_file_name }}'
-        - '{{ task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}'
-        - '{{ task_dir }}/{{ ansible_distribution_combine }}/{{ include_file_name }}'
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_distribution_combine }}/{{ include_file_name }}"
         # if all fails, we fallback to os family
-        - '{{ task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}'
-        - '{{ task_dir }}/shared/{{ include_file_name }}'
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/{{ ansible_os_family }}/{{ include_file_name }}"
+        - "{{ vars['task_dir_' + role_name|split('.')|last] }}/shared/{{ include_file_name }}"
   loop_control:
     loop_var: include_file_path
 
