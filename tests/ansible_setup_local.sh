@@ -110,7 +110,7 @@ then
   test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
   test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
   test -f $ansibleconfigfile && cp -anv $ansibleconfigfile $ansibleconfigfile.bak
-  ansible-config init --disabled -t all > $ansibleconfigfile
+  ansible-config init --disabled -t all | sed -e 's|{{ ANSIBLE_HOME ~ "/|/etc/ansible/|g' -e 's|" }}||g' > $ansibleconfigfile
   sed -i 's|^;inventory=|inventory=|' $ansibleconfigfile
   sed -i 's|^;roles_path=|roles_path=|' $ansibleconfigfile
   sed -i 's|^;collections_path=|collections_path=|' $ansibleconfigfile
