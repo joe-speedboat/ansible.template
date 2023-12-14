@@ -1,8 +1,12 @@
 #!/bin/bash
 #DESC: Setup and configure Ansible control node
-#WHO: chris@bitbull.ch
-#DATE: 20220202
-
+# Copyright (c) Chris Ruettimann <chris@bitbull.ch>
+# This software is licensed to you under the GNU General Public License.
+# There is NO WARRANTY for this software, express or
+# implied, including the implied warranties of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. You should have received a copy of GPLv2
+# along with this software; if not, see
+# http://www.gnu.org/licenses/gpl.txt
 
 test -f /etc/os-release
 if [ $? -ne 0 ]
@@ -95,6 +99,27 @@ then
   test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
   test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
   test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
+  ansible-galaxy search joe-speedboat | cat
+
+elif [ "$os_type$os_ver" == "rel9"  ] #########################################################
+then
+  subscription-manager repos --enable=$(dnf repolist --all | awk '{print $1}' | grep -i codeready | grep $(echo $VERSION |cut -d. -f1)-$(arch)-rpms | tail -1)
+  for PKG in git wget curl ansible-core
+  do
+     rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || dnf -y install $PKG
+  done
+  ansibleconfigfile="/etc/ansible/ansible.cfg"
+  test -d /etc/ansible || mkdir /etc/ansible ; chmod 755 /etc/ansible
+  test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
+  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
+  test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
+  test -f $ansibleconfigfile && cp -anv $ansibleconfigfile $ansibleconfigfile.bak
+  ansible-config init --disabled -t all | sed -e 's|{{ ANSIBLE_HOME ~ "/|/etc/ansible/|g' -e 's|" }}||g' > $ansibleconfigfile
+  sed -i 's|^;inventory=|inventory=|' $ansibleconfigfile
+  sed -i 's|^;roles_path=|roles_path=|' $ansibleconfigfile
+  sed -i 's|^;collections_path=|collections_path=|' $ansibleconfigfile
+  sed -i 's|^;nocows=.*|nocows=True|' $ansibleconfigfile
+  test -f /etc/ansible/hosts || echo localhost > /etc/ansible/hosts
   ansible-galaxy search joe-speedboat | cat
 
 elif [ "$os_type$os_ver" == "rel_clone9"  ] #########################################################
