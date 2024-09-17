@@ -6,7 +6,7 @@
   set_fact:
     ansible_distribution_combine: dummy
 
-- name: Create rhelAll fact if needed when AlmaLinux, Rocky, RHEL
+- name: Create rhelAll fact, useful when AlmaLinux, Rocky, RHEL, ... all use the same Ansible code base
   set_fact:
     ansible_distribution_combine: rhelAll
   when: >
@@ -57,6 +57,11 @@
   register: found_task_dirs
   no_log: True
 
+- name: show tasks directory var
+  debug:
+    msg: "{{ 'task_dir_' + role_name|split('.')|last }}: {{ found_task_dirs.files[0].path|dirname }}"
+    verbosity: 1
+
 - name: define tasks directory
   set_fact:
     "{{ 'task_dir_' + role_name|split('.')|last }}": "{{ found_task_dirs.files[0].path|dirname }}"
@@ -86,6 +91,11 @@
   set_fact: 
     include_file_names: "{{ include_file_names | unique | sort }}"
 
+- name: show playbooks
+  debug:
+    msg: "include_file_names: {{ include_file_names | unique | sort }}"
+    verbosity: 1
+
 ######## END: Get playbooks to run ########
 
 
@@ -97,4 +107,4 @@
   with_items:
     - "{{ include_file_names }}"
 ######## END: Execution part ########
-
+...
