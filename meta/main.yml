@@ -4,7 +4,7 @@
 galaxy_info:
   author: Chris Ruettimann
   role_name: template
-  namespace: joe-speedboat
+#  namespace: joe-speedboat
   description: Bitbull Template Ansible Role
   min_ansible_version: 2.9
   license: GPLv3

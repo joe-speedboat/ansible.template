@@ -25,5 +25,4 @@
         - "{{ vars['task_dir_' + role_name|split('.')|last] }}/shared/{{ include_file_name }}"
   loop_control:
     loop_var: include_file_path
-
 ...
