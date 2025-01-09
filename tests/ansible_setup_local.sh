@@ -38,7 +38,7 @@ esac
 
 echo "DEBUG: os_type=$os_type os_ver=$os_ver"
 
-elif [ "$os_type$os_ver" == "rel_clone8"  ] #########################################################
+if [ "$os_type$os_ver" == "rel_clone8"  ] #########################################################
 then
   dnf -y config-manager --set-enabled powertools
   for PKG in epel-release git wget curl ansible
