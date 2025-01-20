@@ -135,14 +135,18 @@ EOF
 
 chmod +x $PROFILE_SCRIPT
 
+test -e /etc/vimrc.local
+if [ $? -ne 0 ]
+then
 # Optimize VIM settings for ansible
-echo "Optimizing VIM ansible settings for all users..."
+echo "Optimizing VIM ansible settings in /etc/vimrc.local for all users..."
 echo 'syntax on
-autocmd fileType yaml setlocal ai ts=2 sw=2 nu et
+autocmd fileType yaml setlocal ai ts=2 sw=2 et
 set cursorline
 set cursorcolumn
 set title
 ' > /etc/vimrc.local
+fi
 
 # Set ownership, permissions, and enforce group ownership
 echo "Setting correct permissions on $ANSIBLE_HOME..."
@@ -161,7 +165,22 @@ fi
 # Deactivate Virtual Environment
 deactivate
 
-echo "Installation completed successfully. Ansible is now set up and ready to use!"
-echo "To start using Ansible, log out and log back in or run:"
-echo "source /etc/profile.d/ansible.sh"
+echo "
+Installation completed successfully. Ansible is now set up and ready to use!
+
+Aliases:
+  via -> ansible-vault edit
+  cde -> cd \$ANSIBLE_HOME
+
+Profile (enable venv at startup): /etc/profile.d/ansible.sh
+VIM config: /etc/vimrc.local
+
+Application base directory(venv): /opt/ansible/app/
+
+Ansible home dir: $ANSIBLE_HOME
+Ansible configured version: $ANSIBLE_VERSION
+
+To start using Ansible, log out and log back in or run:
+source /etc/profile.d/ansible.sh
+"
 
