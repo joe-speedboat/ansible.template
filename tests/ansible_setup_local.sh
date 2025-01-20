@@ -44,14 +44,8 @@ if ! getent group ansible > /dev/null; then
     groupadd ansible
 fi
 
-# Ensure ansible user exists
-if ! id ansible &>/dev/null; then
-    echo "Creating ansible user..."
-    useradd -r -g ansible -d $ANSIBLE_HOME -s /sbin/nologin ansible
-fi
-
 # Add specific users to ansible group if they exist
-for user in root ansible rundeck; do
+for user in root ansible rundeck semaphore; do
     if id "$user" &>/dev/null; then
         echo "Adding $user to ansible group..."
         usermod -aG ansible "$user"
@@ -121,6 +115,7 @@ echo 'localhost ansible_connection=local ansible_become=False' > ${ANSIBLE_HOME}
 echo "Setting up Ansible virtual environment auto-activation for all users..."
 cat <<EOF > $PROFILE_SCRIPT
 #!/bin/bash
+# Ansible virtual ENV settings, configured by http://ansible.bitbull.ch
 export ANSIBLE_VERSION="$ANSIBLE_VERSION" # taken from setup
 export ANSIBLE_HOME="$ANSIBLE_HOME"
 export ANSIBLE_VENV_PATH="\${ANSIBLE_HOME}/apps/\${ANSIBLE_VERSION}"
@@ -139,6 +134,16 @@ export PS1="(\$ANSIBLE_VERSION)[\u@\h \W]\\\$ "
 EOF
 
 chmod +x $PROFILE_SCRIPT
+
+# Optimize VIM settings for ansible
+echo "Optimizing VIM ansible settings for all users..."
+echo '# ansible optimized vim settings, installed by http://ansible.bitbull.ch
+syntax on
+autocmd fileType yaml setlocal ai ts=2 sw=2 nu et
+set cursorline
+set cursorcolumn
+set title
+' > /etc/vimrc.local
 
 # Set ownership, permissions, and enforce group ownership
 echo "Setting correct permissions on $ANSIBLE_HOME..."
