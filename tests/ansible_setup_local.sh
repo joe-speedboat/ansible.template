@@ -137,8 +137,7 @@ chmod +x $PROFILE_SCRIPT
 
 # Optimize VIM settings for ansible
 echo "Optimizing VIM ansible settings for all users..."
-echo '# ansible optimized vim settings, installed by http://ansible.bitbull.ch
-syntax on
+echo 'syntax on
 autocmd fileType yaml setlocal ai ts=2 sw=2 nu et
 set cursorline
 set cursorcolumn
