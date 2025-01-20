@@ -8,198 +8,156 @@
 # along with this software; if not, see
 # http://www.gnu.org/licenses/gpl.txt
 
-if [ "$USER" != "root" ]
-then
-  echo ERROR: User is not root, we setup as root
-  exit 1
+#!/bin/bash
+
+# Define variables
+ANSIBLE_HOME="/opt/ansible"
+ANSIBLE_VERSION="11.1.0"
+PYTHON_VERSION="3.12"
+ANSIBLE_VENV_PATH="${ANSIBLE_HOME}/apps/${ANSIBLE_VERSION}"
+PROFILE_SCRIPT="/etc/profile.d/ansible.sh"
+
+# Ensure the script runs as root
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root. Use sudo."
+   exit 1
 fi
 
-test -f /etc/os-release
-if [ $? -ne 0 ]
-then
-  echo "ERROR: /etc/os-release missing"
-  exit 1
+# Ensure its an rpm based system
+grep -q 'platform:el9' /etc/os-release
+if [[ $? -ne 0 ]]; then
+   echo "This is only for RHEL9 like systems"
+   exit 1
 fi
 
-source /etc/os-release
-echo "INFO: determine OS type now"
-case "$ID" in 
-  centos|almalinux|rocky)
-    os_type="rel_clone"
-    ;;
-  rhel)
-    os_type="rel"
-    ;;
-esac
+# Update system packages
+echo "Updating system packages..."
+dnf update -y
 
-echo "INFO: determine OS version now"
-case "$VERSION_ID" in 
-  7*)
-    os_ver=7
-    ;;
-  8*)
-    os_ver=8
-    ;;
-  9*)
-    os_ver=9
-    ;;
-esac
+# Install required dependencies
+echo "Installing required packages..."
+dnf install -y curl wget vim git gnupg python3 python3-pip rsync sshpass unzip zip jq bash-completion
 
-echo "DEBUG: os_type=$os_type os_ver=$os_ver"
+# Ensure ansible group exists
+if ! getent group ansible > /dev/null; then
+    echo "Creating ansible group..."
+    groupadd ansible
+fi
 
-if [ "$os_type$os_ver" == "rel_clone7"  ] #########################################################
-then
-  for PKG in epel-release git wget curl ansible
-  do
-     rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || yum -y install $PKG
-  done
-  ansibleconfigfile="/etc/ansible/ansible.cfg"
-  sed -i 's|^#inventory .*|inventory      = /etc/ansible/hosts|g' $ANSIBLE_CONFIG
-  sed -i 's|^#roles_path .*|roles_path    = /etc/ansible/roles|g' $ANSIBLE_CONFIG
-  sed -i 's|^#remote_user .*|remote_user = root|g' $ANSIBLE_CONFIG
-  sed -i 's|^#nocows .*|nocows = 1|g' $ANSIBLE_CONFIG
-  sed -i "/^roles_path/a\ \n#additional paths to search for collections in, colon separated\ncollections_paths = /etc/ansible/collections" $ANSIBLE_CONFIG
-  test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
-  test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
-  ansible-galaxy search joe-speedboat | cat
+# Ensure ansible user exists
+if ! id ansible &>/dev/null; then
+    echo "Creating ansible user..."
+    useradd -r -g ansible -d $ANSIBLE_HOME -s /sbin/nologin ansible
+fi
 
-elif [ "$os_type$os_ver" == "rel_clone8"  ] #########################################################
-then
-  dnf -y config-manager --set-enabled powertools
-  for PKG in epel-release git wget curl ansible
-  do
-     rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || dnf -y install $PKG
-  done
-  ansibleconfigfile="/etc/ansible/ansible.cfg"
-  sed -i 's|^#inventory .*|inventory      = /etc/ansible/hosts|g' $ANSIBLE_CONFIG
-  sed -i 's|^#roles_path .*|roles_path    = /etc/ansible/roles|g' $ANSIBLE_CONFIG
-  sed -i 's|^#remote_user .*|remote_user = root|g' $ANSIBLE_CONFIG
-  sed -i 's|^#nocows .*|nocows = 1|g' $ANSIBLE_CONFIG
-  sed -i "/^roles_path/a\ \n#additional paths to search for collections in, colon separated\ncollections_paths = /etc/ansible/collections" $ANSIBLE_CONFIG
+# Add specific users to ansible group if they exist
+for user in root ansible rundeck; do
+    if id "$user" &>/dev/null; then
+        echo "Adding $user to ansible group..."
+        usermod -aG ansible "$user"
+    fi
+done
 
-  test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
-  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
-  test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
-  ansible-galaxy search joe-speedboat | cat
+# Ensure required directories exist
+echo "Initializing Ansible home directory: $ANSIBLE_HOME"
+mkdir -p "${ANSIBLE_HOME}/apps"
+mkdir -p "${ANSIBLE_HOME}/inventory"
+mkdir -p "${ANSIBLE_HOME}/logs"
+mkdir -p "${ANSIBLE_HOME}/playbooks"
+mkdir -p "${ANSIBLE_HOME}/projects"
 
-elif [ "$os_type$os_ver" == "rel8"  ] #########################################################
-then
-  yes | subscription-manager register | grep -q 'system is already registered'
-  if [ $? -ne 0 ]
-  then
-    echo "ERROR: System is not registered in RHN"
+# Install Python 3.12 if not available
+echo "Checking and installing Python ${PYTHON_VERSION}..."
+dnf install -y python${PYTHON_VERSION} python${PYTHON_VERSION}-pip
+
+# Set default Python for virtual environment
+PYTHON_BIN="/usr/bin/python${PYTHON_VERSION}"
+
+# Check Python installation
+if ! command -v "$PYTHON_BIN" &> /dev/null; then
+    echo "Python ${PYTHON_VERSION} installation failed!"
     exit 1
-  fi
-  subscription-manager repos --enable ansible-2.8-for-rhel-8-x86_64-rpms
-  for PKG in git wget curl ansible
-  do
-     rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || dnf -y install $PKG
-  done
-  ansibleconfigfile="/etc/ansible/ansible.cfg"
-  sed -i 's|^#inventory .*|inventory      = /etc/ansible/hosts|g' $ANSIBLE_CONFIG
-  sed -i 's|^#roles_path .*|roles_path    = /etc/ansible/roles|g' $ANSIBLE_CONFIG
-  sed -i 's|^#remote_user .*|remote_user = root|g' $ANSIBLE_CONFIG
-  sed -i 's|^#nocows .*|nocows = 1|g' $ANSIBLE_CONFIG
-  sed -i "/^roles_path/a\ \n#additional paths to search for collections in, colon separated\ncollections_paths = /etc/ansible/collections" $ANSIBLE_CONFIG
-
-  test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
-  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
-  test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
-  ansible-galaxy search joe-speedboat | cat
-
-elif [ "$os_type$os_ver" == "rel9"  ] #########################################################
-then
-  subscription-manager repos --enable=$(dnf repolist --all | awk '{print $1}' | grep -i codeready | grep $(echo $VERSION |cut -d. -f1)-$(arch)-rpms | tail -1)
-  for PKG in git wget curl ansible-core
-  do
-     rpm -q $PKG >/dev/null 2>&1 && echo $PKG is already installed || dnf -y install $PKG
-  done
-  ansibleconfigfile="/etc/ansible/ansible.cfg"
-  test -d /etc/ansible || mkdir /etc/ansible ; chmod 755 /etc/ansible
-  test -d /etc/ansible/projects || mkdir /etc/ansible/projects ; chmod 700 /etc/ansible/projects
-  test -d /etc/ansible/playbooks || mkdir /etc/ansible/playbooks ; chmod 700 /etc/ansible/playbooks
-  test -d /etc/ansible/collections || mkdir /etc/ansible/collections ; chmod 755 /etc/ansible/collections
-  test -f $ANSIBLE_CONFIG && cp -anv $ANSIBLE_CONFIG $ANSIBLE_CONFIG.bak
-  ansible-config init --disabled -t all | sed -e 's|{{ ANSIBLE_HOME ~ "/|/etc/ansible/|g' -e 's|" }}||g' > $ANSIBLE_CONFIG
-  sed -i 's|^;inventory=|inventory=|' $ANSIBLE_CONFIG
-  sed -i 's|^;roles_path=|roles_path=|' $ANSIBLE_CONFIG
-  sed -i 's|^;collections_path=|collections_path=|' $ANSIBLE_CONFIG
-  sed -i 's|^;nocows=.*|nocows=True|' $ANSIBLE_CONFIG
-  test -f /etc/ansible/hosts || echo localhost > /etc/ansible/hosts
-  ansible-galaxy search joe-speedboat | cat
-
-elif [ "$os_type$os_ver" == "rel_clone9"  ] #########################################################
-then
-  if getent passwd rundeck >/dev/null 2>&1 
-  then
-    export ANSIBLE_USER=rundeck
-    echo "INFO: found user $ANSIBLE_USER, I will use this user for ansible setup"
-  elif getent passwd ansible >/dev/null 2>&1
-  then
-    export ANSIBLE_USER=ansible
-    echo "INFO: found user $ANSIBLE_USER, I will use this user for ansible setup"
-  else
-    export ANSIBLE_USER=root
-    echo 
-    echo "WARNING: no valid ansible user, will install as root into system binaries"
-    echo "         User rundeck or ansible would be best practice, you have 15s to quit with CTRL-C before setup is starting"
-    echo 
-    sleep 15
-  fi
-  
-  AV=2.18 # ansible version
-  PV=3.12 # python version
-  PKG="git wget curl python${PV} python${PV}-pip"
-  echo INFO: Installing $PKG
-  dnf -y install $PKG || exit 1
-
-  echo INFO: Installing Ansible as user $ANSIBLE_USER
-  su -s /bin/bash -c "python${PV} -m pip install --user ansible-core==$AV" $ANSIBLE_USER
-
-  echo INFO: Test Ansible as user $ANSIBLE_USER
-  su -s /bin/bash -c "~/.local/bin/ansible --version" $ANSIBLE_USER
-
-  # write ansible config and prepare dev env
-  ANSIBLE_CONFIG=/etc/ansible/ansible.cfg
-  ANSIBLE_HOME=$(dirname $ANSIBLE_CONFIG)
-  ANSIBLE_USER_HOME=$(getent passwd "$ANSIBLE_USER" | cut -d: -f6)
-  grep -q ANSIBLE_HOME $ANSIBLE_USER_HOME/.bashrc || echo "export ANSIBLE_HOME=$ANSIBLE_HOME" >> $ANSIBLE_USER_HOME/.bashrc
-  grep -q ANSIBLE_CONFIG $ANSIBLE_USER_HOME/.bashrc || echo "export ANSIBLE_CONFIG=$ANSIBLE_CONFIG" >> $ANSIBLE_USER_HOME/.bashrc
-
-  # create project dirs
-  for d in $ANSIBLE_HOME $ANSIBLE_HOME/{inventory,projects,playbooks,tmp}
-  do
-    test -d $d || ( mkdir -p $d ; chmod 770 $d ; chown root:$ANSIBLE_USER $d )
-  done
-
-  # backup config, if exist
-  test -f $ANSIBLE_CONFIG && cp -anv $ANSIBLE_CONFIG $ANSIBLE_CONFIG.$(date +%Y%m%d%H%M)
-
-  # create fresh config
-  su -s /bin/bash -c "~/.local/bin/ansible-config init --disabled -t all" $ANSIBLE_USER > $ANSIBLE_CONFIG
-
-  # comment in all $ANSIBLE_HOME relevant values
-  sed -i 's|^;\(.*=.*/etc/.*\)|\1|' $ANSIBLE_CONFIG
-
-  # clean up roles_path
-  sed -i "s|^roles_path=.*|roles_path=$ANSIBLE_HOME/roles:/usr/share/ansible/roles|" $ANSIBLE_CONFIG
-
-  # comment in and configure inventory
-  sed -i 's|^;inventory=|inventory=|' $ANSIBLE_CONFIG
-  sed -i 's|^inventory=.*|inventory=/etc/ansible/inventory|' $ANSIBLE_CONFIG
-  test -f /etc/ansible/inventory/localhost || echo echo 'localhost ansible_connection=local ansible_become=False' > /etc/ansible/inventory/localhost
-
-  # check that are no more dupes
-  grep '/etc/ansible/.*/etc/ansible/' $ANSIBLE_CONFIG && echo "ERROR: remove this dupes first in $ANSIBLE_CONFIG"
-  grep '/etc/ansible/.*/etc/ansible/' $ANSIBLE_CONFIG && exit 1
-
-  su -s /bin/bash -c "~/.local/bin/ansible-galaxy search joe-speedboat | cat" $ANSIBLE_USER 
-  su -s /bin/bash -c "~/.local/bin/ansible-galaxy install joe-speedboat.os_update" $ANSIBLE_USER 
-
-  # move perms to $ANSIBLE_USER
-  chown -R $ANSIBLE_USER $ANSIBLE_HOME
-
-else
-  echo "WARNING: No supported operating system found: os_type=$os_type os_ver=$os_ver"
 fi
-echo done
+
+# Create Python Virtual Environment
+echo "Creating virtual environment for Ansible $ANSIBLE_VERSION at $ANSIBLE_VENV_PATH..."
+python${PYTHON_VERSION} -m venv "$ANSIBLE_VENV_PATH"
+
+# Activate Virtual Environment
+echo "Activating virtual environment..."
+source "$ANSIBLE_VENV_PATH/bin/activate"
+
+# Upgrade pip and install Ansible
+echo "Upgrading pip and installing Ansible $ANSIBLE_VERSION..."
+pip install --upgrade pip
+pip install ansible=="$ANSIBLE_VERSION" argcomplete
+
+# Enable Ansible Autocomplete (official method)
+echo "Setting up Ansible autocomplete..."
+activate-global-python-argcomplete --dest /etc/bash_completion.d
+
+# Generate ansible.cfg template with all options disabled
+echo "Generating Ansible configuration template..."
+ansible-config init --disabled -t all > ${ANSIBLE_HOME}/ansible.cfg
+
+# Apply best practice modifications
+echo "Applying best practices to ansible.cfg..."
+sed -i 's|^;inventory=.*|inventory='"${ANSIBLE_HOME}/inventory"'|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;roles_path=.*|roles_path='"${ANSIBLE_HOME}/roles"'|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;log_path=.*|log_path='"${ANSIBLE_HOME}/logs/ansible.log"'|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;host_key_checking=.*|host_key_checking=False|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;retry_files_enabled=.*|retry_files_enabled=False|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;stdout_callback=.*|stdout_callback=yaml|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;deprecation_warnings=.*|deprecation_warnings=False|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;interpreter_python=.*|interpreter_python=auto_silent|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;pipelining=.*|pipelining=True|' ${ANSIBLE_HOME}/ansible.cfg
+sed -i 's|^;forks=.*|forks = 20|' ${ANSIBLE_HOME}/ansible.cfg
+
+# Set up inventory
+echo "Setting up Ansible inventory..."
+echo 'localhost ansible_connection=local ansible_become=False' > ${ANSIBLE_HOME}/inventory/localhost
+
+# Set up auto-activation in /etc/profile.d/
+echo "Setting up Ansible virtual environment auto-activation for all users..."
+cat <<EOF > $PROFILE_SCRIPT
+#!/bin/bash
+export ANSIBLE_VERSION="$ANSIBLE_VERSION" # taken from setup
+export ANSIBLE_HOME="$ANSIBLE_HOME"
+export ANSIBLE_VENV_PATH="\${ANSIBLE_HOME}/apps/\${ANSIBLE_VERSION}"
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# useful ansible aliases
+alias cda='cd \$ANSIBLE_HOME'
+alias via='ansible-vault edit'
+
+# Activate virtual environment if it exists
+if [ -d "\$ANSIBLE_VENV_PATH" ]; then
+    test -r "\$ANSIBLE_VENV_PATH/bin/activate" && source "\$ANSIBLE_VENV_PATH/bin/activate"
+fi
+
+export PS1="(\$ANSIBLE_VERSION)[\u@\h \W]\\\$ "
+EOF
+
+chmod +x $PROFILE_SCRIPT
+
+# Set ownership, permissions, and enforce group ownership
+echo "Setting correct permissions on $ANSIBLE_HOME..."
+chown -R root:ansible "$ANSIBLE_HOME"
+chmod -R ug+rwX,o-rwx "$ANSIBLE_HOME"
+
+# Apply group sticky bit recursively on directories
+find "$ANSIBLE_HOME" -type d -exec chmod g+s {} +
+
+# Create /etc/ansible symlink if it does not exist
+if [ ! -e /etc/ansible ]; then
+    echo "Creating symlink: /etc/ansible → $ANSIBLE_HOME"
+    ln -s "$ANSIBLE_HOME" /etc/ansible
+fi
+
+# Deactivate Virtual Environment
+deactivate
+
+echo "Installation completed successfully. Ansible is now set up and ready to use!"
+echo "To start using Ansible, log out and log back in or run:"
+echo "source /etc/profile.d/ansible.sh"
+
