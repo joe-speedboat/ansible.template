@@ -175,7 +175,7 @@ Aliases:
 Profile (enable venv at startup): /etc/profile.d/ansible.sh
 VIM config: /etc/vimrc.local
 
-Application base directory(venv): /opt/ansible/app/
+Application base directory(venv): /opt/ansible/apps/
 
 Ansible home dir: $ANSIBLE_HOME
 Ansible configured version: $ANSIBLE_VERSION
