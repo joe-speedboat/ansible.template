@@ -130,6 +130,8 @@ if [ -d "\$ANSIBLE_VENV_PATH" ]; then
     test -r "\$ANSIBLE_VENV_PATH/bin/activate" && source "\$ANSIBLE_VENV_PATH/bin/activate"
 fi
 
+umask 0007
+
 export PS1="(\$ANSIBLE_VERSION)[\u@\h \W]\\\$ "
 EOF
 
