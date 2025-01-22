@@ -170,7 +170,7 @@ Installation completed successfully. Ansible is now set up and ready to use!
 
 Aliases:
   via -> ansible-vault edit
-  cde -> cd \$ANSIBLE_HOME
+  cda -> cd \$ANSIBLE_HOME
 
 Profile (enable venv at startup): /etc/profile.d/ansible.sh
 VIM config: /etc/vimrc.local
