@@ -132,6 +132,7 @@ fi
 # -------------------------------------------------
 
 export ANSIBLE_VENV_PATH="\${ANSIBLE_HOME}/apps/\${ANSIBLE_VERSION}"
+export VIRTUAL_ENV=\$ANSIBLE_VENV_PATH
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 # useful ansible aliases
