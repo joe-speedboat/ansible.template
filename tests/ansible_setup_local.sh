@@ -118,6 +118,18 @@ cat <<EOF > $PROFILE_SCRIPT
 # Ansible virtual ENV settings, configured by http://ansible.bitbull.ch
 export ANSIBLE_VERSION="$ANSIBLE_VERSION" # taken from setup
 export ANSIBLE_HOME="$ANSIBLE_HOME"
+
+# Source user-defined settings, if available
+if [[ -r "\$HOME/.ansible.sh" ]]; then
+    source "\$HOME/.ansible.sh"
+fi
+
+# \$HOME/.ansible.sh # example to override as user
+# -------------------------------------------------
+# export ANSIBLE_VERSION="11.0.0"
+# export ANSIBLE_HOME="/opt/ansible_old"
+# -------------------------------------------------
+
 export ANSIBLE_VENV_PATH="\${ANSIBLE_HOME}/apps/\${ANSIBLE_VERSION}"
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
@@ -143,10 +155,14 @@ then
 # Optimize VIM settings for ansible
 echo "Optimizing VIM ansible settings in /etc/vimrc.local for all users..."
 echo 'syntax on
-autocmd fileType yaml setlocal ai ts=2 sw=2 et
 set cursorline
 set cursorcolumn
 set title
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+autocmd fileType yaml setlocal ai
 ' > /etc/vimrc.local
 fi
 
@@ -175,6 +191,13 @@ Aliases:
   cda -> cd \$ANSIBLE_HOME
 
 Profile (enable venv at startup): /etc/profile.d/ansible.sh
+Note, you can override choosen env by creating user config in 
+\$HOME/.ansible.sh
+-----------------------------------
+export ANSIBLE_VERSION="11.0.0"
+export ANSIBLE_HOME="/opt/ansible"
+-----------------------------------
+
 VIM config: /etc/vimrc.local
 
 Application base directory(venv): /opt/ansible/apps/
