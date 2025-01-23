@@ -16,6 +16,7 @@ ANSIBLE_VERSION="11.1.0"
 PYTHON_VERSION="3.12"
 ANSIBLE_VENV_PATH="${ANSIBLE_HOME}/apps/${ANSIBLE_VERSION}"
 PROFILE_SCRIPT="/etc/profile.d/ansible.sh"
+UMASK="0007"
 
 # Ensure the script runs as root
 if [[ $EUID -ne 0 ]]; then
@@ -142,7 +143,7 @@ if [ -d "\$ANSIBLE_VENV_PATH" ]; then
     test -r "\$ANSIBLE_VENV_PATH/bin/activate" && source "\$ANSIBLE_VENV_PATH/bin/activate"
 fi
 
-umask 0007
+umask $UMASK
 
 export PS1="(\$ANSIBLE_VERSION)[\u@\h \W]\\\$ "
 EOF
@@ -163,7 +164,7 @@ set shiftwidth=2
 set softtabstop=2
 autocmd fileType yaml setlocal ai
 ' > /etc/vimrc.local
-chmod -r /etc/vimrc.local
+chmod +r /etc/vimrc.local
 fi
 
 # Set ownership, permissions, and enforce group ownership
@@ -200,7 +201,7 @@ export ANSIBLE_HOME="/opt/ansible"
 
 VIM config: /etc/vimrc.local
 
-Application base directory(venv): /opt/ansible/apps/
+Application base directory(venv): $ANSIBLE_HOME/apps/
 
 Ansible home dir: $ANSIBLE_HOME
 Ansible configured version: $ANSIBLE_VERSION
