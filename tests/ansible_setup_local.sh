@@ -146,7 +146,6 @@ umask 0007
 
 export PS1="(\$ANSIBLE_VERSION)[\u@\h \W]\\\$ "
 EOF
-
 chmod +x $PROFILE_SCRIPT
 
 test -e /etc/vimrc.local
@@ -164,6 +163,7 @@ set shiftwidth=2
 set softtabstop=2
 autocmd fileType yaml setlocal ai
 ' > /etc/vimrc.local
+chmod -r /etc/vimrc.local
 fi
 
 # Set ownership, permissions, and enforce group ownership
