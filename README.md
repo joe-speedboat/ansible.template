@@ -31,19 +31,19 @@ This template concept, which I searched on the internet and did not find is fore
 * Reorder them by numbers
 * Run tasks by first match with the ansible_facts of the target machine (```include-file.yml```)
   * ```{{  ansible_distribution_custom }}-{{ ansible_distribution_version }}```
-    * rhelAll-7.9
+    * rhelAll-8.4
   * ```{{ ansible_distribution_custom }}-{{ ansible_distribution_major_version }}```
-    * rhelAll-7
+    * rhelAll-8
   * ```{{ ansible_distribution_custom }}```
     * rhelAll
   * ```{{ ansible_distribution }}-{{ ansible_distribution_version }}```
-    * CentOS-7.9
-    * Ubuntu-20.04
+    * Rocky-8.4
+    * Ubuntu-24.04
   * ```{{ ansible_distribution }}-{{ ansible_distribution_major_version }}```
-    * CentOS-7
+    * AlmaLinux-8
     * Ubuntu-20
   * ```{{ ansible_distribution }}```
-    * CentOS
+    * Rocky
     * Ubuntu
   * ```{{ ansible_os_family }}```
     * RedHat
@@ -63,13 +63,13 @@ $ find tasks -type f -name '*.yml' #modified view
 
 tasks/shared/01_run_on_all_systems.yml
 
-tasks/CentOS-7/10_prep.yml
+tasks/Rocky-7/10_prep.yml
 tasks/shared/10_prep.yml
 
-tasks/CentOS-8/20_setup.yml
+tasks/Rocky-8/20_setup.yml
 tasks/shared/20_setup.yml
 
-tasks/CentOS-8/30_post.yml
+tasks/Rocky-8/30_post.yml
 tasks/shared/30_post.yml
 ```
 
@@ -96,10 +96,10 @@ ansible-galaxy install joe-speedboat.template
 
 ## Requirements xxx
 
-* Currently tested with CentOS 7 and CentOS 8
+* Currently tested with Rocky 9 
 * Ansible 2.9 or higher is required for this Ansible Role
 
-* Operating System: CentOS8 || CentOS7
+* Operating System: Rocky 9
 * OS Disk: min 00 GB
 * Data Disk: min 00 GB
 * CPU: min 00   
