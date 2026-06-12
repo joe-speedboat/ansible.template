@@ -102,9 +102,3 @@ This template has no role dependencies.
 GPL-3.0: <https://opensource.org/licenses/GPL-3.0>
 
 Copyright (c) Chris Ruettimann <chris@bitbull.ch>
-
-## Support
-
-Many thanks to all Open Source supporters. If you use this construct for
-productive work, please consider a donation to
-[Stiftung Buehl](https://www.stiftung-buehl.ch/ueber-uns/spenden).
