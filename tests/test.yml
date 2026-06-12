@@ -1,9 +1,9 @@
-#!/usr/bin/ansible-playbook 
+#!/usr/bin/ansible-playbook
 ---
-- name: joe-speedboat.template Setup
+- name: joe-speedboat.template setup
   hosts: localhost
   vars:
     mandatory_var: mandatory-value
   roles:
-    - joe-speedboat.template
+    - role: joe-speedboat.template
 ...

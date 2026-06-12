@@ -1,1 +1,1 @@
-Add files here, which can be copied 1-1 without changes
+Put static files here when they can be copied unchanged.
