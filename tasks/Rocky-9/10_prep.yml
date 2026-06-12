@@ -1,3 +1,5 @@
 ---
-- debug: msg="This is an example task file for tasks/Rocky-9/10_prep.yml"
+- name: Show Rocky 9 prep example
+  ansible.builtin.debug:
+    msg: This is an example task file for tasks/Rocky-9/10_prep.yml
 ...

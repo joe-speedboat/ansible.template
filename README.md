@@ -1,69 +1,54 @@
-# BITBULL ANSIBLE ROLE TEMPLATE
+# Bitbull Ansible Role Template
 
-## WHY
-When Red Hat officially started supporting Ansible, I had a lot of fun immersing myself    
-in this really new concept of automation and keeping my knowledge up to date.   
+## Why
 
-A must for every efficient Linux consultant!   
+This repository is a reusable Ansible role template for roles that need clear,
+dynamic OS-specific task dispatching while staying compatible with AWX.
 
-Just like GitHub repos, which at the beginning was the desired solution to a long worn problem,    
-with its excessive use it quickly became clear that management and maintenance are the    
-factors that determine the expense of these resources you have to spend in the future.   
+The template is designed to make role maintenance easier by keeping task order
+stable and selecting the best matching implementation from Ansible facts.
 
-I have always been of the opinion that what cannot be maintained in Operations has been developed incorrectly.     
-And I am constantly trying to do justice to this.    
+## How it works
 
-For this purpose I have developed an Ansible role template, which is mandatory:    
-* Clear
-* Unambiguous
-* Dynamic   
+The dispatcher in `tasks/main.yml`:
 
-which in turn reduces:    
-* Error
-* Familiarization
-* Maintenance
+1. Sets `ansible_distribution_combine` to `rhelAll` for RHEL-like distributions
+   (`AlmaLinux`, `Rocky`, `RedHat`) and to `dummy` for all other systems.
+2. Finds all task files below `tasks/` whose filename matches
+   `^[0-9]{2}_.*.yml$`.
+3. Deduplicates task basenames and sorts them by filename.
+4. Includes each basename once through `tasks/include-file.yml`.
 
-This template concept, which I searched on the internet and did not find is foremost compatible with the current version of AWX.    
-(upstream project for Ansible Tower)
+For every task basename, `tasks/include-file.yml` uses the first existing file
+from this order:
 
-## HOW IT WORKS
-* Create a deduplicated list of task files
-* Reorder them by numbers
-* Run tasks by first match with the ansible_facts of the target machine (```include-file.yml```)
-  * ```{{  ansible_distribution_custom }}-{{ ansible_distribution_version }}```
-    * rhelAll-8.4
-  * ```{{ ansible_distribution_custom }}-{{ ansible_distribution_major_version }}```
-    * rhelAll-8
-  * ```{{ ansible_distribution_custom }}```
-    * rhelAll
-  * ```{{ ansible_distribution }}-{{ ansible_distribution_version }}```
-    * Rocky-8.4
-    * Ubuntu-24.04
-  * ```{{ ansible_distribution }}-{{ ansible_distribution_major_version }}```
-    * AlmaLinux-8
-    * Ubuntu-20
-  * ```{{ ansible_distribution }}```
-    * Rocky
-    * Ubuntu
-  * ```{{ ansible_os_family }}```
-    * RedHat
-    * Debian
-  * ```shared```
-    * This is the fallback, if noting above matches
-
-* Note, since RockyLinux and AlmaLinux are RHEL clones that work almost similar, we needed just one os folder for both
-  * If you need tasks that work for Alma and Rocky, create a folder named ```rhelAll``` in ```tasks``` folder
-    * It get catched like the var ```{{ ansible_distribution }}``` above
-
-You can look ito the role directory, it will be clear why and how to use it.   
-
-To get an overview, just look up the file names:
+```text
+tasks/{{ ansible_distribution }}-{{ ansible_distribution_version }}/<task>.yml
+tasks/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/<task>.yml
+tasks/{{ ansible_distribution }}/<task>.yml
+tasks/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/<task>.yml
+tasks/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/<task>.yml
+tasks/{{ ansible_distribution_combine }}/<task>.yml
+tasks/{{ ansible_os_family }}/<task>.yml
+tasks/shared/<task>.yml
 ```
-$ find tasks -type f -name '*.yml' #modified view
 
+Examples:
+
+- `tasks/Rocky-9/10_prep.yml` overrides `tasks/rhelAll/10_prep.yml` and
+  `tasks/shared/10_prep.yml` on Rocky Linux 9 hosts.
+- `tasks/rhelAll/20_setup.yml` can be used for common AlmaLinux, Rocky Linux,
+  and Red Hat Enterprise Linux logic.
+- `tasks/Ubuntu/20_setup.yml` can be used for Ubuntu-specific logic.
+- `tasks/shared/30_post.yml` is the final fallback when no OS-specific file
+  exists for the same basename.
+
+## Example layout
+
+```text
 tasks/shared/01_run_on_all_systems.yml
 
-tasks/Rocky-7/10_prep.yml
+tasks/Rocky-9/10_prep.yml
 tasks/shared/10_prep.yml
 
 tasks/Rocky-8/20_setup.yml
@@ -73,53 +58,47 @@ tasks/Rocky-8/30_post.yml
 tasks/shared/30_post.yml
 ```
 
-## Drawback of this solution
-Including of task-files, depending on given ansible-facts, has to get created in blocks statements within the task files itself.
+Numeric prefixes define execution order. The same basename can exist in multiple
+OS folders; only the first matching implementation is included for a host.
 
-## One final word
-Many thanks to all supporters of OpenSource products,    
-only by sharing our solutions we could get this far!   
-If you use this construct for your productive work,    
-we would appreciate a donation to the [Stifung Buehl](https://www.stiftung-buehl.ch/ueber-uns/spenden).   
-All our know-how is OpenSource and your donation enables    
-children and young people with special needs to find a place in life.   
+## Drawback
 
-Chris Ruettimann <chris@bitbull.ch>
+Conditional grouping still has to be implemented inside the selected task file
+when several tasks need to be wrapped in the same `block`.
 
-# <ROLENAME>
+## Role skeleton
 
-Installation with ansible-galaxy:
+After copying this template for a real role, update at least:
 
-``` bash
+- `meta/main.yml` (`role_name`, description, supported platforms)
+- `defaults/main.yml` (user-overridable variables)
+- `vars/main.yml` (fixed internal variables)
+- `tasks/*` (replace the example debug tasks)
+- `handlers/main.yml` (replace the example service handler)
+- `tests/test.yml` (use the final Galaxy role name)
+
+## Installation
+
+```bash
 ansible-galaxy install joe-speedboat.template
 ```
 
-## Requirements xxx
+## Requirements
 
-* Currently tested with Rocky 9 
-* Ansible 2.9 or higher is required for this Ansible Role
+- Ansible 2.9 or higher
+- A supported Linux distribution for the role generated from this template
 
-* Operating System: Rocky 9
-* OS Disk: min 00 GB
-* Data Disk: min 00 GB
-* CPU: min 00   
-* Memory: min 00 GB   
+## Role variables
 
-
-
-Role Variables
---------------
-
-Variables are speaking or documented in defaults/main.yml   
-One variable is mandatory: var1xxx
-
+Document user-overridable variables in `defaults/main.yml`. Keep fixed internal
+maps and constants in `vars/main.yml`.
 
 ## Dependencies
 
-This Ansilbe Role has no dependencies to other Ansilbe Roles
+This template has no role dependencies.
 
-License
--------
-https://opensource.org/licenses/GPL-3.0    
+## License
+
+GPL-3.0: <https://opensource.org/licenses/GPL-3.0>
+
 Copyright (c) Chris Ruettimann <chris@bitbull.ch>
-

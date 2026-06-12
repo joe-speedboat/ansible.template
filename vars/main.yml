@@ -1,7 +1,6 @@
+# vars/main.yml
 ---
-# Here belong all variables, that can be changed by a vars-file,
-# a playbook or a include.
+# Put fixed internal variables, maps, and constants here.
 
 fixed_var1: this_fixed_var_is_defined_in_vars_folder
-
 ...
