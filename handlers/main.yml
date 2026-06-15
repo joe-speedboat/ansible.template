@@ -1,9 +1,11 @@
 # handlers/main.yml
 ---
-# Put restart, reload, and other notified actions here.
+# Add real handlers here and notify them from task files.
+# Remove this demo handler when creating a real role.
 
-- name: Restart <SERVICE>
+- name: Restart demo service
   ansible.builtin.service:
-    name: <SERVICE>
+    name: demo-service
     state: restarted
+  listen: restart demo service
 ...

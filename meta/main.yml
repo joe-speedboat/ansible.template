@@ -1,11 +1,11 @@
 # meta/main.yml
 ---
-# Change as needed.
+# Update this metadata when creating a real role.
 galaxy_info:
   author: Chris Ruettimann
+  namespace: joe_speedboat
   role_name: template
-  # namespace: joe-speedboat
-  description: Bitbull Template Ansible Role
+  description: Bitbull OS-aware Ansible role template
   min_ansible_version: '2.9'
   license: GPLv3
   platforms:
@@ -13,7 +13,13 @@ galaxy_info:
       versions:
         - '7'
         - '8'
-  galaxy_tags: []
+        - '9'
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - ansible
+    - template
 
 dependencies: []
 ...

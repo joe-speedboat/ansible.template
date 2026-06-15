@@ -1,5 +1,5 @@
 ---
-- name: Show shared setup example
+- name: Show shared setup demo task
   ansible.builtin.debug:
-    msg: This is an example task file for tasks/shared/20_setup.yml
+    msg: Replace tasks/shared/20_setup.yml with setup tasks that run when no OS-specific 20_setup.yml exists.
 ...

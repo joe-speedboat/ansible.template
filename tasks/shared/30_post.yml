@@ -1,5 +1,5 @@
 ---
-- name: Show shared post example
+- name: Show shared post demo task
   ansible.builtin.debug:
-    msg: This is an example task file for tasks/shared/30_post.yml
+    msg: Replace tasks/shared/30_post.yml with final tasks that run when no OS-specific 30_post.yml exists.
 ...

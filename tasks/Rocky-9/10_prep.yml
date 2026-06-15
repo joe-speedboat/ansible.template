@@ -1,5 +1,5 @@
 ---
-- name: Show Rocky 9 prep example
+- name: Show Rocky 9 prep demo task
   ansible.builtin.debug:
-    msg: This is an example task file for tasks/Rocky-9/10_prep.yml
+    msg: Replace tasks/Rocky-9/10_prep.yml with Rocky 9 specific preparation tasks, or delete it to use a fallback.
 ...
