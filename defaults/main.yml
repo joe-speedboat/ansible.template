@@ -1,8 +1,9 @@
 # defaults/main.yml
 ---
-# Put variables here when users may override them from inventory, playbooks,
-# AWX surveys, or extra-vars.
+# User-overridable variables belong here.
+# Replace these demo variables when creating a real role and document every
+# public variable in README.md.
 
-mandatory_default_var1xxx: playbook-will-fail-without-this-var
-default_var2_xxx: this_is_defined_in_defaults_folder
+template_required_value: change-me
+template_example_enabled: true
 ...
