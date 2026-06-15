@@ -75,23 +75,71 @@ tasks/shared/<task>.yml
 ```
 
 `ansible_distribution_combine` is `rhelAll` for `AlmaLinux`, `Rocky`, and
-`RedHat`; otherwise it is `dummy`.
+`RedHat`. For other distributions the `rhelAll` lookup steps simply do not
+match a real folder, so dispatch continues to OS-family and `shared` fallbacks.
 
 ## Folder naming rules
 
-Use the most general folder that is still correct:
+Use the most general folder that is still correct. More specific folders win
+because they are checked first.
+
+For a Rocky Linux 9.3 host and task basename `20_setup.yml`, the dispatcher
+tries this complete ordered set:
+
+```text
+tasks/Rocky-9.3/20_setup.yml      # exact distribution + exact version
+tasks/Rocky-9/20_setup.yml        # exact distribution + major version
+tasks/Rocky/20_setup.yml          # exact distribution, all versions
+tasks/rhelAll-9.3/20_setup.yml    # RHEL-like family + exact version
+tasks/rhelAll-9/20_setup.yml      # RHEL-like family + major version
+tasks/rhelAll/20_setup.yml        # RHEL-like family, all versions
+tasks/RedHat/20_setup.yml         # Ansible OS family fallback
+tasks/shared/20_setup.yml         # global fallback
+```
+
+For Ubuntu 24.04, the same basename resolves through the non-`rhelAll` path:
+
+```text
+tasks/Ubuntu-24.04/20_setup.yml   # exact distribution + exact version
+tasks/Ubuntu-24/20_setup.yml      # exact distribution + major version
+tasks/Ubuntu/20_setup.yml         # exact distribution, all versions
+tasks/Debian/20_setup.yml         # Ansible OS family fallback
+tasks/shared/20_setup.yml         # global fallback
+```
+
+```mermaid
+flowchart TD
+    A[Need a task implementation] --> B{Only this exact distro minor version?}
+    B -- yes --> B1[Use Distribution-Version<br/>Rocky-9.3, Ubuntu-24.04, AlmaLinux-9.4]
+    B -- no --> C{Only this exact distro major version?}
+    C -- yes --> C1[Use Distribution-Major<br/>Rocky-9, Ubuntu-24, AlmaLinux-9]
+    C -- no --> D{All versions of one distribution?}
+    D -- yes --> D1[Use Distribution<br/>Rocky, Ubuntu, AlmaLinux]
+    D -- no --> E{All RHEL-like distributions?}
+    E -- exact minor --> E1[Use rhelAll-Version<br/>rhelAll-9.3]
+    E -- major only --> E2[Use rhelAll-Major<br/>rhelAll-9]
+    E -- all versions --> E3[Use rhelAll]
+    E -- no --> F{Whole OS family?}
+    F -- yes --> F1[Use OS family<br/>RedHat, Debian]
+    F -- no --> G[Use shared]
+```
 
 | Folder | Use for |
 |---|---|
-| `tasks/shared/` | Logic that must run on every supported OS. |
-| `tasks/rhelAll/` | Common AlmaLinux, Rocky, and Red Hat logic. |
-| `tasks/rhelAll-8/` | RHEL-like version-specific overrides, for example Python compatibility workarounds. |
-| `tasks/Ubuntu/` | Ubuntu-specific logic. |
+| `tasks/Rocky-9.3/` | One exact distribution minor version. Highest precedence. |
+| `tasks/Rocky-9/` | One distribution major version. |
+| `tasks/Rocky/` | All versions of one distribution. |
+| `tasks/rhelAll-9.3/` | Exact minor version across AlmaLinux, Rocky, and Red Hat. |
+| `tasks/rhelAll-9/` | Major version across AlmaLinux, Rocky, and Red Hat. |
+| `tasks/rhelAll/` | All supported AlmaLinux, Rocky, and Red Hat versions. |
+| `tasks/Ubuntu-24.04/` | One exact Ubuntu minor version. |
+| `tasks/Ubuntu-24/` | One Ubuntu major version. |
+| `tasks/Ubuntu/` | All Ubuntu versions. |
 | `tasks/Debian/` | Debian-family logic when it is safe for Ubuntu too. |
-| `tasks/Rocky-9/` | Distribution/version-specific overrides. |
+| `tasks/shared/` | Logic that must run on every supported OS. Lowest precedence. |
 
 Do not use `tasks/RedHat/` as the normal abstraction for all RHEL-like systems;
-use `tasks/rhelAll/` for that.
+use `tasks/rhelAll/`, `tasks/rhelAll-9/`, or `tasks/rhelAll-9.3/` for that.
 
 ## Task file rules
 
