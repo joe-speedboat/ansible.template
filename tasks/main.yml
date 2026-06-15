@@ -40,19 +40,18 @@
       symlinks roles/{{ role_path | basename }} to this checkout.
   when: found_task_dirs.files | length == 0
 
-- name: Store this role's tasks directory
+- name: Store this role's tasks directory in a role-scoped fact
   ansible.builtin.set_fact:
-    role_task_dir: "{{ found_task_dirs.files[0].path | dirname }}"
     "{{ 'task_dir_' + role_name | split('.') | last }}": "{{ found_task_dirs.files[0].path | dirname }}"
 
 - name: Show this role's tasks directory
   ansible.builtin.debug:
-    msg: "role_task_dir: {{ role_task_dir }}"
+    msg: "{{ 'task_dir_' + role_name | split('.') | last }}: {{ vars['task_dir_' + role_name | split('.') | last] }}"
     verbosity: 1
 
 - name: Find numbered task files
   ansible.builtin.find:
-    paths: "{{ role_task_dir }}"
+    paths: "{{ vars['task_dir_' + role_name | split('.') | last] }}"
     recurse: true
     depth: 2
     file_type: file
@@ -63,9 +62,9 @@
   run_once: true
   register: found_playbooks
 
-- name: Build ordered task basename list
+- name: Build ordered task basename list in a role-scoped fact
   ansible.builtin.set_fact:
-    include_file_names: >-
+    "{{ 'include_file_names_' + role_name | split('.') | last }}": >-
       {{ found_playbooks.files
          | map(attribute='path')
          | map('basename')
@@ -75,12 +74,12 @@
 
 - name: Show ordered task basename list
   ansible.builtin.debug:
-    msg: "include_file_names: {{ include_file_names }}"
+    msg: "{{ 'include_file_names_' + role_name | split('.') | last }}: {{ vars['include_file_names_' + role_name | split('.') | last] }}"
     verbosity: 1
 
 - name: Include selected task implementation for each basename
   ansible.builtin.include_tasks: include-file.yml
-  loop: "{{ include_file_names }}"
+  loop: "{{ vars['include_file_names_' + role_name | split('.') | last] }}"
   loop_control:
     loop_var: include_file_name
 ...
