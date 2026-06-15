@@ -1,21 +1,23 @@
 ---
 - name: Include {{ include_file_name }}
   ansible.builtin.include_tasks: "{{ include_file_path }}"
+  vars:
+    selected_role_task_dir: "{{ vars['task_dir_' + role_name | split('.') | last] }}"
   with_first_found:
     - files:
         # Most specific distribution/version match first.
-        - "{{ role_task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
-        - "{{ role_task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
-        - "{{ role_task_dir }}/{{ ansible_distribution }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution }}/{{ include_file_name }}"
 
         # Shared RHEL-compatible fallback for AlmaLinux, Rocky, and Red Hat.
-        - "{{ role_task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
-        - "{{ role_task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
-        - "{{ role_task_dir }}/{{ ansible_distribution_combine }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_version }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution_combine }}-{{ ansible_distribution_major_version }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_distribution_combine }}/{{ include_file_name }}"
 
         # Generic OS-family fallback, then global fallback.
-        - "{{ role_task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}"
-        - "{{ role_task_dir }}/shared/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/{{ ansible_os_family }}/{{ include_file_name }}"
+        - "{{ selected_role_task_dir }}/shared/{{ include_file_name }}"
   loop_control:
     loop_var: include_file_path
 ...
