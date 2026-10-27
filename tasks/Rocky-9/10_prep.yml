@@ -1,0 +1,5 @@
+---
+- name: Show Rocky 9 prep demo task
+  ansible.builtin.debug:
+    msg: Replace tasks/Rocky-9/10_prep.yml with Rocky 9 specific preparation tasks, or delete it to use a fallback.
+...

@@ -1,0 +1,5 @@
+---
+- name: Show Rocky 8 post demo task
+  ansible.builtin.debug:
+    msg: Replace tasks/Rocky-8/30_post.yml with Rocky 8 specific final tasks, or delete it to use a fallback.
+...

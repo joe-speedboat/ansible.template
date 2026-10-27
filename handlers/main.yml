@@ -1,12 +1,11 @@
 # handlers/main.yml
 ---
-# Here belong all actions like service-restart,
-# config-file loads, etc. that will be started
-# if a change on a task was made
+# Add real handlers here and notify them from task files.
+# Remove this demo handler when creating a real role.
 
-- name: restart <SERVICE>
-  service:
-    name: <SERVICE>
+- name: Restart demo service
+  ansible.builtin.service:
+    name: demo-service
     state: restarted
-
+  listen: restart demo service
 ...

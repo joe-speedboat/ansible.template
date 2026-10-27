@@ -1,7 +1,7 @@
+# vars/main.yml
 ---
-# Here belong all variables, that can be changed by a vars-file,
-# a playbook or a include.
+# Fixed internal variables, maps, and constants belong here.
+# Users normally should not override values from vars/main.yml.
 
-fixed_var1: this_fixed_var_is_defined_in_vars_folder
-
+template_internal_example: defined-in-vars
 ...

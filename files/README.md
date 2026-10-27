@@ -1,1 +1,2 @@
-Add files here, which can be copied 1-1 without changes
+Static files copied unchanged with `ansible.builtin.copy` belong here.
+Remove this README when real files make the directory self-explanatory.

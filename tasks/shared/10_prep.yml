@@ -1,3 +1,5 @@
 ---
-- debug: msg="This is an example task file for tasks/shared/10_prep.yml"
+- name: Show shared prep demo task
+  ansible.builtin.debug:
+    msg: Replace tasks/shared/10_prep.yml with preparation tasks that run on all supported hosts.
 ...

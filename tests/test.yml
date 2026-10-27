@@ -1,9 +1,8 @@
-#!/usr/bin/ansible-playbook 
+#!/usr/bin/ansible-playbook
 ---
-- name: joe-speedboat.template Setup
+- name: Smoke test joe-speedboat.template
   hosts: localhost
-  vars:
-    mandatory_var: mandatory-value
+  gather_facts: true
   roles:
-    - joe-speedboat.template
+    - role: joe-speedboat.template
 ...
