@@ -21,6 +21,7 @@
       - "/etc/ansible/roles/{{ role_path | basename }}/tasks"
       - "/runner/project/roles/{{ role_path | basename }}/tasks"
       - "/runner/requirements_roles/{{ role_path | basename }}/tasks"
+      - "/workspace/ansible/roles/{{ role_path | basename }}/tasks"
     recurse: false
     depth: 1
     file_type: file
